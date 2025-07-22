@@ -48,9 +48,6 @@ Usage
 
         // Solubility given in mass of solute per mass of solvent
         solubility      constant 0.9;
-
-        // Type of the nucleate: 'solid', 'liquid' or 'gas'.
-        nucleate        solid;
     }
     \endverbatim
 
@@ -82,17 +79,6 @@ class homogeneousLiquidPhaseSeparation
     public phaseChange,
     public nucleation
 {
-public:
-
-    // Public Type Definitions
-
-        //- Enumeration for the nucleate types
-        enum class nucleateType { solid, liquid, gas };
-
-        //- Names of the moment types
-        static const NamedEnum<nucleateType, 3> nucleateTypeNames_;
-
-
 private:
 
     // Private Data
@@ -108,9 +94,6 @@ private:
 
         //- Solubility curve
         autoPtr<Function1<scalar>> solubilityCurve_;
-
-        //- Nucleate type
-        nucleateType nucleateType_;
 
 
     // Private Member Functions
