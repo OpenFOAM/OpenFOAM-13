@@ -24,9 +24,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "triSurfaceSampledSet.H"
-#include "meshSearch.H"
-#include "polyMesh.H"
 #include "triSurface_searchableSurface.H"
+#include "meshSearch.H"
 #include "Time.H"
 #include "addToRunTimeSelectionTable.H"
 
@@ -59,18 +58,21 @@ namespace Foam
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-void Foam::sampledSets::triSurface::calcSamples
+bool Foam::sampledSets::triSurface::calcSamples
 (
     DynamicList<point>& samplingPositions,
+    DynamicList<scalar>&,
     DynamicList<label>& samplingSegments,
     DynamicList<label>& samplingCells,
     DynamicList<label>& samplingFaces
 ) const
 {
+    const meshSearch& searchEngine = meshSearch::New(mesh());
+
     forAll(points_, i)
     {
         const point& pt = points_[i];
-        const label celli = searchEngine().findCell(pt);
+        const label celli = searchEngine.findCell(pt);
 
         if (celli != -1)
         {
@@ -80,36 +82,9 @@ void Foam::sampledSets::triSurface::calcSamples
             samplingFaces.append(-1);
         }
     }
-}
 
-
-void Foam::sampledSets::triSurface::genSamples()
-{
-    DynamicList<point> samplingPositions;
-    DynamicList<label> samplingSegments;
-    DynamicList<label> samplingCells;
-    DynamicList<label> samplingFaces;
-
-    calcSamples
-    (
-        samplingPositions,
-        samplingSegments,
-        samplingCells,
-        samplingFaces
-    );
-
-    samplingPositions.shrink();
-    samplingSegments.shrink();
-    samplingCells.shrink();
-    samplingFaces.shrink();
-
-    setSamples
-    (
-        samplingPositions,
-        samplingSegments,
-        samplingCells,
-        samplingFaces
-    );
+    // This set is unordered. Distances have not been created.
+    return false;
 }
 
 
@@ -119,11 +94,10 @@ Foam::sampledSets::triSurface::triSurface
 (
     const word& name,
     const polyMesh& mesh,
-    const meshSearch& searchEngine,
     const dictionary& dict
 )
 :
-    sampledSet(name, mesh, searchEngine, dict),
+    sampledSet(name, mesh, dict),
     surface_(dict.lookup("surface")),
     points_
     (
@@ -149,9 +123,7 @@ Foam::sampledSets::triSurface::triSurface
             )
         ).points()
     )
-{
-    genSamples();
-}
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //

@@ -42,17 +42,26 @@ namespace sampledSets
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-void Foam::sampledSets::cellSet::genSamples()
+bool Foam::sampledSets::cellSet::calcSamples
+(
+    DynamicList<point>& samplingPositions,
+    DynamicList<scalar>&,
+    DynamicList<label>& samplingSegments,
+    DynamicList<label>& samplingCells,
+    DynamicList<label>& samplingFaces
+) const
 {
-    const labelList cells(Foam::cellSet(mesh(), setName_).toc());
+    samplingCells = Foam::cellSet(mesh(), setName_).toc();
 
-    setSamples
-    (
-        List<point>(IndirectList<point>(mesh().cellCentres(), cells)),
-        identityMap(cells.size()),
-        cells,
-        labelList(cells.size(), -1)
-    );
+    samplingPositions =
+        IndirectList<point>(mesh().cellCentres(), samplingCells);
+
+    samplingSegments = identityMap(samplingCells.size());
+
+    samplingFaces = labelList(samplingCells.size(), -1);
+
+    // This set is unordered. Distances have not been created.
+    return false;
 }
 
 
@@ -62,15 +71,12 @@ Foam::sampledSets::cellSet::cellSet
 (
     const word& name,
     const polyMesh& mesh,
-    const meshSearch& searchEngine,
     const dictionary& dict
 )
 :
-    sampledSet(name, mesh, searchEngine, dict),
+    sampledSet(name, mesh, dict),
     setName_(dict.lookup("set"))
-{
-    genSamples();
-}
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //

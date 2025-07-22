@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2011-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -25,8 +25,6 @@ License
 
 #include "points.H"
 #include "meshSearch.H"
-#include "DynamicList.H"
-#include "polyMesh.H"
 #include "sampledSetCloud.H"
 #include "addToRunTimeSelectionTable.H"
 
@@ -47,7 +45,6 @@ namespace sampledSets
 void Foam::sampledSets::points::calcSamples
 (
     const polyMesh& mesh,
-    const meshSearch& searchEngine,
     const pointField& points,
     DynamicList<point>& samplingPositions,
     DynamicList<scalar>& samplingDistances,
@@ -56,6 +53,8 @@ void Foam::sampledSets::points::calcSamples
     DynamicList<label>& samplingFaces
 )
 {
+    const meshSearch& searchEngine = meshSearch::New(mesh);
+
     // Create a cloud with which to track segments
     sampledSetCloud particles
     (
@@ -127,7 +126,7 @@ void Foam::sampledSets::points::calcSamples
                 (
                     new sampledSetParticle
                     (
-                        mesh,
+                        searchEngine,
                         points[pointi],
                         procAndCelli.second(),
                         nLocateBoundaryHits,
@@ -169,31 +168,7 @@ void Foam::sampledSets::points::calcSamples
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-void Foam::sampledSets::points::calcSamplesUnordered
-(
-    DynamicList<point>& samplingPositions,
-    DynamicList<label>& samplingSegments,
-    DynamicList<label>& samplingCells,
-    DynamicList<label>& samplingFaces
-) const
-{
-    forAll(points_, i)
-    {
-        const point& pt = points_[i];
-        const label celli = searchEngine().findCell(pt);
-
-        if (celli != -1)
-        {
-            samplingPositions.append(pt);
-            samplingSegments.append(i);
-            samplingCells.append(celli);
-            samplingFaces.append(-1);
-        }
-    }
-}
-
-
-void Foam::sampledSets::points::calcSamplesOrdered
+bool Foam::sampledSets::points::calcSamples
 (
     DynamicList<point>& samplingPositions,
     DynamicList<scalar>& samplingDistances,
@@ -202,43 +177,30 @@ void Foam::sampledSets::points::calcSamplesOrdered
     DynamicList<label>& samplingFaces
 ) const
 {
-    // Calculate the sampling topology
-    calcSamples
-    (
-        mesh(),
-        searchEngine(),
-        pointField(points_),
-        samplingPositions,
-        samplingDistances,
-        samplingSegments,
-        samplingCells,
-        samplingFaces
-    );
-}
-
-
-void Foam::sampledSets::points::genSamples()
-{
-    DynamicList<point> samplingPositions;
-    DynamicList<scalar> samplingDistances;
-    DynamicList<label> samplingSegments;
-    DynamicList<label> samplingCells;
-    DynamicList<label> samplingFaces;
-
     if (!ordered_)
     {
-        calcSamplesUnordered
-        (
-            samplingPositions,
-            samplingSegments,
-            samplingCells,
-            samplingFaces
-        );
+        const meshSearch& searchEngine = meshSearch::New(mesh());
+
+        forAll(points_, i)
+        {
+            const point& pt = points_[i];
+            const label celli = searchEngine.findCell(pt);
+
+            if (celli != -1)
+            {
+                samplingPositions.append(pt);
+                samplingSegments.append(i);
+                samplingCells.append(celli);
+                samplingFaces.append(-1);
+            }
+        }
     }
     else
     {
-        calcSamplesOrdered
+        calcSamples
         (
+            mesh(),
+            pointField(points_),
             samplingPositions,
             samplingDistances,
             samplingSegments,
@@ -247,33 +209,8 @@ void Foam::sampledSets::points::genSamples()
         );
     }
 
-    samplingPositions.shrink();
-    samplingDistances.shrink();
-    samplingSegments.shrink();
-    samplingCells.shrink();
-    samplingFaces.shrink();
-
-    if (!ordered_)
-    {
-        setSamples
-        (
-            samplingPositions,
-            samplingSegments,
-            samplingCells,
-            samplingFaces
-        );
-    }
-    else
-    {
-        setSamples
-        (
-            samplingPositions,
-            samplingDistances,
-            samplingSegments,
-            samplingCells,
-            samplingFaces
-        );
-    }
+    // Return whether or not distances have been created
+    return ordered_;
 }
 
 
@@ -283,16 +220,13 @@ Foam::sampledSets::points::points
 (
     const word& name,
     const polyMesh& mesh,
-    const meshSearch& searchEngine,
     const dictionary& dict
 )
 :
-    sampledSet(name, mesh, searchEngine, dict),
+    sampledSet(name, mesh, dict),
     points_(dict.lookup("points")),
     ordered_(dict.lookup<bool>("ordered"))
-{
-    genSamples();
-}
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //

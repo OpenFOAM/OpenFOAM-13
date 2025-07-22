@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2011-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -28,6 +28,7 @@ License
 #include "triPointRef.H"
 #include "tetIndices.H"
 #include "standardNormal.H"
+#include "meshSearch.H"
 
 using namespace Foam::constant::mathematical;
 
@@ -142,7 +143,9 @@ void Foam::FreeStream<CloudType>::inflow()
 {
     CloudType& cloud(this->owner());
 
-    const polyMesh& mesh(cloud.mesh());
+    const polyMesh& mesh = cloud.mesh();
+
+    const meshSearch& searchEngine = meshSearch::New(mesh);
 
     const scalar deltaT = mesh.time().deltaTValue();
 
@@ -403,6 +406,7 @@ void Foam::FreeStream<CloudType>::inflow()
 
                     cloud.addNewParcel
                     (
+                        searchEngine,
                         p,
                         celli,
                         nLocateBoundaryHits,

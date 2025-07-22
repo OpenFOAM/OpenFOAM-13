@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2011-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -97,16 +97,7 @@ class points
     // Private Member Functions
 
         //- Calculate all the sampling points
-        void calcSamplesUnordered
-        (
-            DynamicList<point>& samplingPositions,
-            DynamicList<label>& samplingSegments,
-            DynamicList<label>& samplingCells,
-            DynamicList<label>& samplingFaces
-        ) const;
-
-        //- Calculate all the sampling points
-        void calcSamplesOrdered
+        virtual bool calcSamples
         (
             DynamicList<point>& samplingPositions,
             DynamicList<scalar>& samplingDistances,
@@ -114,9 +105,6 @@ class points
             DynamicList<label>& samplingCells,
             DynamicList<label>& samplingFaces
         ) const;
-
-        //- Uses calcSamples to obtain samples and copies them into *this
-        virtual void genSamples();
 
 
 public:
@@ -131,7 +119,6 @@ public:
         static void calcSamples
         (
             const polyMesh& mesh,
-            const meshSearch& searchEngine,
             const pointField& points,
             DynamicList<point>& samplingPositons,
             DynamicList<scalar>& samplingDistances,
@@ -148,7 +135,6 @@ public:
         (
             const word& name,
             const polyMesh& mesh,
-            const meshSearch& searchEngine,
             const dictionary& dict
         );
 

@@ -42,17 +42,27 @@ namespace sampledSets
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-void Foam::sampledSets::faceSet::genSamples()
+bool Foam::sampledSets::faceSet::calcSamples
+(
+    DynamicList<point>& samplingPositions,
+    DynamicList<scalar>&,
+    DynamicList<label>& samplingSegments,
+    DynamicList<label>& samplingCells,
+    DynamicList<label>& samplingFaces
+) const
 {
-    const labelList faces(Foam::faceSet(mesh(), setName_).toc());
+    samplingFaces = Foam::faceSet(mesh(), setName_).toc();
 
-    setSamples
-    (
-        List<point>(IndirectList<point>(mesh().faceCentres(), faces)),
-        identityMap(faces.size()),
-        labelList(UIndirectList<label>(mesh().faceOwner(), faces)),
-        faces
-    );
+    samplingPositions =
+        IndirectList<point>(mesh().cellCentres(), samplingFaces);
+
+    samplingSegments = identityMap(samplingFaces.size());
+
+    samplingCells =
+        labelList(UIndirectList<label>(mesh().faceOwner(), samplingFaces));
+
+    // This set is unordered. Distances have not been created.
+    return false;
 }
 
 
@@ -62,15 +72,12 @@ Foam::sampledSets::faceSet::faceSet
 (
     const word& name,
     const polyMesh& mesh,
-    const meshSearch& searchEngine,
     const dictionary& dict
 )
 :
-    sampledSet(name, mesh, searchEngine, dict),
+    sampledSet(name, mesh, dict),
     setName_(dict.lookup("set"))
-{
-    genSamples();
-}
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //

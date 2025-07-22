@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2011-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -25,8 +25,6 @@ License
 
 #include "sampledSet.H"
 #include "polyMesh.H"
-#include "meshSearch.H"
-#include "setWriter.H"
 #include "lineCell.H"
 #include "lineCellFace.H"
 #include "lineFace.H"
@@ -43,60 +41,27 @@ namespace Foam
 
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
-void Foam::sampledSet::setSamples
-(
-    const List<point>& samplingPositions,
-    const labelList& samplingSegments,
-    const labelList& samplingCells,
-    const labelList& samplingFaces
-)
+void Foam::sampledSet::setSamples() const
 {
-    if
-    (
-        (samplingCells.size() != samplingPositions.size())
-     || (samplingFaces.size() != samplingPositions.size())
-     || (samplingSegments.size() != samplingPositions.size())
-    )
-    {
-        FatalErrorInFunction
-            << "sizes not equal : "
-            << "  positions:" << samplingPositions.size()
-            << "  segments:" << samplingSegments.size()
-            << "  cells:" << samplingCells.size()
-            << "  faces:" << samplingFaces.size()
-            << abort(FatalError);
-    }
+    DynamicList<point> samplingPositions;
+    DynamicList<scalar> samplingDistances;
+    DynamicList<label> samplingSegments;
+    DynamicList<label> samplingCells;
+    DynamicList<label> samplingFaces;
 
-    (*this).coordSet::operator=
-    (
-        coordSet
+    const bool ordered =
+        calcSamples
         (
+            samplingPositions,
+            samplingDistances,
             samplingSegments,
-            word::null,
-            pointField(samplingPositions),
-            axisTypeNames_[axisType::DISTANCE],
-            scalarField::null(),
-            axisTypeNames_[axis_]
-        )
-    );
+            samplingCells,
+            samplingFaces
+        );
 
-    cells_ = samplingCells;
-    faces_ = samplingFaces;
-}
-
-
-void Foam::sampledSet::setSamples
-(
-    const List<point>& samplingPositions,
-    const List<scalar>& samplingDistances,
-    const labelList& samplingSegments,
-    const labelList& samplingCells,
-    const labelList& samplingFaces
-)
-{
     if
     (
-        (samplingDistances.size() != samplingPositions.size())
+        (ordered && samplingDistances.size() != samplingPositions.size())
      || (samplingCells.size() != samplingPositions.size())
      || (samplingFaces.size() != samplingPositions.size())
      || (samplingSegments.size() != samplingPositions.size())
@@ -104,29 +69,40 @@ void Foam::sampledSet::setSamples
     {
         FatalErrorInFunction
             << "sizes not equal : "
-            << "  positions:" << samplingPositions.size()
-            << "  distances:" << samplingDistances.size()
+            << "  positions:" << samplingPositions.size();
+        if (ordered) FatalError
+            << "  distances:" << samplingDistances.size();
+        FatalError
             << "  segments:" << samplingSegments.size()
             << "  cells:" << samplingCells.size()
             << "  faces:" << samplingFaces.size()
             << abort(FatalError);
     }
 
-    (*this).coordSet::operator=
+    pointField positions;
+    positions.transfer(samplingPositions);
+
+    scalarField distances;
+    if (ordered) distances.transfer(samplingDistances);
+
+    coordsPtr_.reset
     (
-        coordSet
+        new coordSet
         (
             samplingSegments,
             word::null,
-            pointField(samplingPositions),
-            axisTypeNames_[axisType::DISTANCE],
-            scalarField(samplingDistances),
-            axisTypeNames_[axis_]
+            positions,
+            coordSet::axisTypeNames_[coordSet::axisType::DISTANCE],
+            ordered ? distances : NullObjectRef<scalarField>(),
+            coordSet::axisTypeNames_[axis_]
         )
     );
 
-    cells_ = samplingCells;
-    faces_ = samplingFaces;
+    cellsPtr_.reset(new labelList());
+    cellsPtr_().transfer(samplingCells);
+
+    facesPtr_.reset(new labelList());
+    facesPtr_().transfer(samplingFaces);
 }
 
 
@@ -136,46 +112,42 @@ Foam::sampledSet::sampledSet
 (
     const word& name,
     const polyMesh& mesh,
-    const meshSearch& searchEngine,
     const word& axis
 )
 :
-    coordSet(),
     name_(name),
     mesh_(mesh),
-    searchEngine_(searchEngine),
-    cells_(0),
-    faces_(0)
-{
-    axis_ = axisTypeNames_[axis];
-}
+    coordsPtr_(nullptr),
+    cellsPtr_(),
+    facesPtr_(),
+    axis_(coordSet::axisTypeNames_[axis])
+{}
 
 
 Foam::sampledSet::sampledSet
 (
     const word& name,
     const polyMesh& mesh,
-    const meshSearch& searchEngine,
     const dictionary& dict
 )
 :
-    coordSet(),
     name_(name),
     mesh_(mesh),
-    searchEngine_(searchEngine),
-    cells_(0),
-    faces_(0)
-{
-    axis_ =
-        axisTypeNames_
+    coordsPtr_(),
+    cellsPtr_(),
+    facesPtr_(),
+    axis_
+    (
+        coordSet::axisTypeNames_
         [
             dict.lookupOrDefault<word>
             (
                 "axis",
-                axisTypeNames_[axisType::DEFAULT]
+                coordSet::axisTypeNames_[coordSet::axisType::DEFAULT]
             )
-        ];
-}
+        ]
+    )
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -190,7 +162,6 @@ Foam::autoPtr<Foam::sampledSet> Foam::sampledSet::New
 (
     const word& name,
     const polyMesh& mesh,
-    const meshSearch& searchEngine,
     const dictionary& dict
 )
 {
@@ -241,7 +212,6 @@ Foam::autoPtr<Foam::sampledSet> Foam::sampledSet::New
         (
             name,
             mesh,
-            searchEngine,
             dict.optionalSubDict(sampleType + "Coeffs")
         )
     );
@@ -252,19 +222,25 @@ Foam::autoPtr<Foam::sampledSet> Foam::sampledSet::New
 
 void Foam::sampledSet::movePoints()
 {
-    genSamples();
+    coordsPtr_.clear();
+    cellsPtr_.clear();
+    facesPtr_.clear();
 }
 
 
 void Foam::sampledSet::topoChange(const polyTopoChangeMap& map)
 {
-    genSamples();
+    coordsPtr_.clear();
+    cellsPtr_.clear();
+    facesPtr_.clear();
 }
 
 
 void Foam::sampledSet::mapMesh(const polyMeshMap& map)
 {
-    genSamples();
+    coordsPtr_.clear();
+    cellsPtr_.clear();
+    facesPtr_.clear();
 }
 
 
@@ -273,7 +249,9 @@ void Foam::sampledSet::distribute
     const polyDistributionMap& map
 )
 {
-    genSamples();
+    coordsPtr_.clear();
+    cellsPtr_.clear();
+    facesPtr_.clear();
 }
 
 

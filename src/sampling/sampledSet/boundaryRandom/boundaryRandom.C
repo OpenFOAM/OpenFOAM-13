@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2011-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -25,7 +25,6 @@ License
 
 #include "boundaryRandom.H"
 #include "sampledSet.H"
-#include "meshSearch.H"
 #include "DynamicList.H"
 #include "polyMesh.H"
 #include "addToRunTimeSelectionTable.H"
@@ -50,9 +49,10 @@ namespace sampledSets
 
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
-void Foam::sampledSets::boundaryRandom::calcSamples
+bool Foam::sampledSets::boundaryRandom::calcSamples
 (
     DynamicList<point>& samplingPositions,
+    DynamicList<scalar>&,
     DynamicList<label>& samplingSegments,
     DynamicList<label>& samplingCells,
     DynamicList<label>& samplingFaces
@@ -158,36 +158,9 @@ void Foam::sampledSets::boundaryRandom::calcSamples
             samplingFaces.append(tetIs.face());
         }
     }
-}
 
-
-void Foam::sampledSets::boundaryRandom::genSamples()
-{
-    DynamicList<point> samplingPositions;
-    DynamicList<label> samplingSegments;
-    DynamicList<label> samplingCells;
-    DynamicList<label> samplingFaces;
-
-    calcSamples
-    (
-        samplingPositions,
-        samplingSegments,
-        samplingCells,
-        samplingFaces
-    );
-
-    samplingPositions.shrink();
-    samplingSegments.shrink();
-    samplingCells.shrink();
-    samplingFaces.shrink();
-
-    setSamples
-    (
-        samplingPositions,
-        samplingSegments,
-        samplingCells,
-        samplingFaces
-    );
+    // This set is unordered. Distances have not been created.
+    return false;
 }
 
 
@@ -197,16 +170,13 @@ Foam::sampledSets::boundaryRandom::boundaryRandom
 (
     const word& name,
     const polyMesh& mesh,
-    const meshSearch& searchEngine,
     const dictionary& dict
 )
 :
-    sampledSet(name, mesh, searchEngine, dict),
+    sampledSet(name, mesh, dict),
     patches_(dict.lookup("patches")),
     nPoints_(dict.lookup<label>("nPoints"))
-{
-    genSamples();
-}
+{}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //

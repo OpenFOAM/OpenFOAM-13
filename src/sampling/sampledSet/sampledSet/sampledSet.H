@@ -53,7 +53,6 @@ namespace Foam
 
 // Forward declaration of classes
 class polyMesh;
-class meshSearch;
 class polyTopoChangeMap;
 class polyMeshMap;
 class polyDistributionMap;
@@ -63,8 +62,6 @@ class polyDistributionMap;
 \*---------------------------------------------------------------------------*/
 
 class sampledSet
-:
-    public coordSet
 {
     // Private Data
 
@@ -74,44 +71,33 @@ class sampledSet
         //- Reference to mesh
         const polyMesh& mesh_;
 
-        //- Reference to mesh searching class
-        const meshSearch& searchEngine_;
-
-
-protected:
-
-    // Protected data
+        //- Coordinate set
+        mutable autoPtr<coordSet> coordsPtr_;
 
         //- Cell numbers
-        labelList cells_;
+        mutable autoPtr<labelList> cellsPtr_;
 
         //- Face numbers (-1 if not known)
-        labelList faces_;
+        mutable autoPtr<labelList> facesPtr_;
+
+        //- Axis
+        const coordSet::axisType axis_;
 
 
-    // Protected Member Functions
+    // Private Member Functions
 
-        //- Sets sample data
-        void setSamples
+        //- Calc the samples
+        virtual bool calcSamples
         (
-            const List<point>& samplingPositions,
-            const labelList& samplingSegments,
-            const labelList& samplingCells,
-            const labelList& samplingFaces
-        );
-
-        //- Sets sample data
-        void setSamples
-        (
-            const List<point>& samplingPositions,
-            const List<scalar>& samplingDistances,
-            const labelList& samplingSegments,
-            const labelList& samplingCells,
-            const labelList& samplingFaces
-        );
+            DynamicList<point>& samplingPositions,
+            DynamicList<scalar>& samplingDistances,
+            DynamicList<label>& samplingSegments,
+            DynamicList<label>& samplingCells,
+            DynamicList<label>& samplingFaces
+        ) const = 0;
 
         //- Generate the samples
-        virtual void genSamples() = 0;
+        void setSamples() const;
 
 
 public:
@@ -130,33 +116,29 @@ public:
             (
                 const word& name,
                 const polyMesh& mesh,
-                const meshSearch& searchEngine,
                 const dictionary& dict
             ),
-            (name, mesh, searchEngine, dict)
+            (name, mesh, dict)
         );
 
 
-        //- Class used for the read-construction of
-        //  PtrLists of sampledSet
+        //- Class used for the read-construction of PtrLists of sampledSet
         class iNew
         {
             const polyMesh& mesh_;
-            const meshSearch& searchEngine_;
 
         public:
 
-            iNew(const polyMesh& mesh, const meshSearch& searchEngine)
+            iNew(const polyMesh& mesh)
             :
-                mesh_(mesh),
-                searchEngine_(searchEngine)
+                mesh_(mesh)
             {}
 
             autoPtr<sampledSet> operator()(Istream& is) const
             {
                 word name(is);
                 dictionary dict(is);
-                return sampledSet::New(name, mesh_, searchEngine_, dict);
+                return sampledSet::New(name, mesh_, dict);
             }
         };
 
@@ -168,7 +150,6 @@ public:
         (
             const word& name,
             const polyMesh& mesh,
-            const meshSearch& searchEngine,
             const word& axis
         );
 
@@ -177,7 +158,6 @@ public:
         (
             const word& name,
             const polyMesh& mesh,
-            const meshSearch& searchEngine,
             const dictionary& dict
         );
 
@@ -196,7 +176,6 @@ public:
         (
             const word& name,
             const polyMesh& mesh,
-            const meshSearch& searchEngine,
             const dictionary& dict
         );
 
@@ -208,34 +187,28 @@ public:
     // Member Functions
 
         //- Access the name
-        const word& name() const
-        {
-            return name_;
-        }
+        inline const word& name() const;
 
         //- Access the mesh
-        const polyMesh& mesh() const
-        {
-            return mesh_;
-        }
+        inline const polyMesh& mesh() const;
 
-        //- Access the search engine
-        const meshSearch& searchEngine() const
-        {
-            return searchEngine_;
-        }
+        //- Access the coordinate set
+        inline const coordSet& coords() const;
+
+        //- Return the size
+        inline label size() const;
+
+        //- Return the size
+        inline const labelList& segments() const;
+
+        //- Access the positions
+        inline const pointField& positions() const;
 
         //- Access the cells
-        const labelList& cells() const
-        {
-            return cells_;
-        }
+        inline const labelList& cells() const;
 
         //- Access the faces
-        const labelList& faces() const
-        {
-            return faces_;
-        }
+        inline const labelList& faces() const;
 
         //- Update for mesh point-motion
         virtual void movePoints();
@@ -248,12 +221,22 @@ public:
 
         //- Redistribute or update using the given distribution map
         virtual void distribute(const polyDistributionMap&);
+
+
+    // Member Operators
+
+        //- Cast to the coordinate set
+        inline operator const coordSet&() const;
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "sampledSetI.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

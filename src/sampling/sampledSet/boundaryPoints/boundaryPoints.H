@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     | Website:  https://openfoam.org
-    \\  /    A nd           | Copyright (C) 2011-2024 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2025 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -95,17 +95,15 @@ class boundaryPoints
 
     // Private Member Functions
 
-        //- Samples all points in sampleCoords
-        void calcSamples
+        //- Calculate all the sampling points
+        virtual bool calcSamples
         (
             DynamicList<point>& samplingPositions,
+            DynamicList<scalar>&,
             DynamicList<label>& samplingSegments,
             DynamicList<label>& samplingCells,
             DynamicList<label>& samplingFaces
         ) const;
-
-        //- Uses calcSamples to obtain samples. Copies them into *this.
-        virtual void genSamples();
 
 
 public:
@@ -121,7 +119,6 @@ public:
         (
             const word& name,
             const polyMesh& mesh,
-            const meshSearch& searchEngine,
             const dictionary& dict
         );
 
