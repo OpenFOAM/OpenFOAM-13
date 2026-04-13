@@ -6,6 +6,7 @@
 #+LINK:                  http://openfoam.org
 #+OPTIONS: author:nil ^:{}
 # Copyright (c) 2015-2025 OpenFOAM Foundation.
+# UPDATE QC SOLVER JOSE
 
 * About OpenFOAM
   OpenFOAM is a free, open source computational fluid dynamics (CFD) software
