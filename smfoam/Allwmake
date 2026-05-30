@@ -1,0 +1,18 @@
+#!/bin/sh
+cd ${0%/*} || exit 1
+
+echo "========================================"
+echo "   Compiling SINMEC Code"
+echo "========================================"
+
+if [ -d src ]; then
+    wmake -all src
+fi
+
+if [ -d applications ]; then
+    wmake -all applications
+fi
+
+echo "========================================"
+echo "   SINMEC Compilation Complete!"
+echo "========================================"

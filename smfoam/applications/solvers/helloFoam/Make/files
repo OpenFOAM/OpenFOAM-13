@@ -1,0 +1,3 @@
+helloFoam.C
+
+EXE = $(SMF_APPBIN)/helloFoam

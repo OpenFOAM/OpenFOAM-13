@@ -1,0 +1,16 @@
+# =========================================================================
+# 1. INCLUDES (Onde o compilador deve procurar os headers .H)
+# =========================================================================
+EXE_INC = \
+    -I$(LIB_SRC)/OpenFOAM/lnInclude \
+    -I$(SMF_SRC)/exempleLib/helloLib
+
+# =========================================================================
+# 2. LIBRARIES (Onde achar as pastas -L e quais binarios puxar -l)
+# -l -> Quais libs carregar
+# -L -> Diretorios de busca adicionais
+# =========================================================================
+LIB_LIBS = \
+    -lOpenFOAM \
+    -L$(SMF_LIBBIN) \
+    -lhelloLib

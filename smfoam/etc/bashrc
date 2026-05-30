@@ -1,0 +1,24 @@
+# =====================================================================
+# Inicializacao do Ambiente smfoam (SINMEC Foam)
+# =====================================================================
+export SMF_PROJECT_DIR=$WM_PROJECT_DIR/smfoam
+
+# Source Code
+export SMF_SRC=$SMF_PROJECT_DIR/src
+export SMF_APP=$SMF_PROJECT_DIR/applications
+export SMF_MODULES=$SMF_PROJECT_DIR/applications/modules
+export SMF_SOLVERS=$SMF_PROJECT_DIR/applications/solvers
+export SMF_UTILS=$SMF_PROJECT_DIR/applications/utilities
+
+# Misc
+export SMF_ETC=$SMF_PROJECT_DIR/etc
+export SMF_TUTORIALS=$SMF_PROJECT_DIR/tutorials
+
+# Binaries and Libraries
+export SMF_APPBIN=$SMF_PROJECT_DIR/platforms/$WM_OPTIONS/bin
+export SMF_LIBBIN=$SMF_PROJECT_DIR/platforms/$WM_OPTIONS/lib
+
+# System Paths
+export PATH=$SMF_APPBIN:$PATH
+export LD_LIBRARY_PATH=$SMF_LIBBIN:$LD_LIBRARY_PATH
+# =====================================================================

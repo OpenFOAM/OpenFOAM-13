@@ -1,0 +1,3 @@
+helloLib.C
+
+LIB = $(SMF_LIBBIN)/libhelloLib

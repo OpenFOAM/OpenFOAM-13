@@ -1,0 +1,3 @@
+helloSolver.C
+
+LIB = $(SMF_LIBBIN)/libhelloSolver

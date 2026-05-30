@@ -33,7 +33,7 @@
 
 export WM_PROJECT=OpenFOAM
 export WM_THIRD_PARTY=ThirdParty
-export WM_PROJECT_VERSION=13
+export WM_PROJECT_VERSION=sm13
 
 ################################################################################
 # USER EDITABLE PART: Changes made here may be lost with the next upgrade
@@ -252,3 +252,13 @@ unset cleaned foamClean foamOldDirs
 [ "$BASH" ] && . $WM_PROJECT_DIR/etc/config.sh/bash_completion
 
 #------------------------------------------------------------------------------
+
+
+
+# =====================================================================
+# Carregar o ambiente customizado do laboratorio
+# =====================================================================
+if [ -f "$WM_PROJECT_DIR/smfoam/etc/bashrc" ]; then
+    source $WM_PROJECT_DIR/smfoam/etc/bashrc
+fi
+# =====================================================================
