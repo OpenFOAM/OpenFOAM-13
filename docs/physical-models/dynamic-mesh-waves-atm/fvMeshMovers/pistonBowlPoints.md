@@ -1,0 +1,46 @@
+# pistonBowlPoints
+
+## 一句话
+
+A zoneGenerator which selects the points within the engine piston bowl
+
+## 适用条件（求解器 / 场 / 前提）
+
+适用: multiValveEngine 活塞碗点集 zoneGenerator
+
+## 字典示例
+
+```c++
+pistonBowl
+    {
+        type        pistonBowlPoints;
+    }
+```
+
+## 参数表
+
+主要入口以源码 `Usage` 为准。常见关键字见字典示例；完整列表与默认值见对应 `.H`。
+
+| 说明 | |
+|------|--|
+| 选择关键字 | `type`（须与 RTS 注册名一致） |
+| 配置位置 | 见适用条件 |
+
+## 控制方程与关联式
+
+摘自源码头文件 `Description`（原文）：
+
+> A zoneGenerator which selects the points within the engine piston bowl
+
+## 文献与源码依据
+
+- 源码：[`src/fvMeshMovers/multiValveEngine/zoneGenerators/pistonBowlPoints/pistonBowlPoints.H`](../../../../src/fvMeshMovers/multiValveEngine/zoneGenerators/pistonBowlPoints/pistonBowlPoints.H)
+- 实现：同目录 `.C`
+
+## 教程与模板
+
+- 发动机气门/活塞动网格教程
+
+## 注意事项
+
+- 随 multiValveEngine 使用

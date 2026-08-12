@@ -1,0 +1,92 @@
+# 动网格 / 波 / 大气 RTS 清单
+
+> 机器生成清单（Phase 0）。由源码 RTS / make* 宏检索得到；供后续 Phase 逐条撰写。
+
+dynamicMesh、fvMesh*、六自由度、waves、atmosphericModels 等。
+
+**条目数**: 82
+
+| 类型名 | 基类/宏键 | 源码路径 | 备注 |
+|--------|-----------|----------|------|
+| `powerLawLopesdaCosta` | `porosityModel` | `src/atmosphericModels/porosityModels/powerLawLopesdaCosta/powerLawLopesdaCosta.C` | atmosphericModels |
+| `distributor` | `fvMeshDistributor` | `src/fvMeshDistributors/distributor/distributor_fvMeshDistributor.C` | fvMeshDistributors |
+| `loadBalancer` | `fvMeshDistributor` | `src/fvMeshDistributors/loadBalancer/loadBalancer_fvMeshDistributor.C` | fvMeshDistributors |
+| `cylinderHeadPoints` | `zoneGenerator` | `src/fvMeshMovers/multiValveEngine/zoneGenerators/cylinderHeadPoints/cylinderHeadPoints.C` | fvMeshMovers |
+| `inkJet` | `fvMeshMover` | `src/fvMeshMovers/inkJet/inkJet_fvMeshMover.C` | fvMeshMovers |
+| `interpolator` | `fvMeshMover` | `src/fvMeshMovers/interpolator/interpolator_fvMeshMover.C` | fvMeshMovers |
+| `motionSolver` | `fvMeshMover` | `src/fvMeshMovers/motionSolver/motionSolver_fvMeshMover.C` | fvMeshMovers |
+| `multiValveEngine` | `fvMeshMover` | `src/fvMeshMovers/multiValveEngine/multiValveEngine.C` | fvMeshMovers |
+| `multiValveEngineState` | `functionObject` | `src/fvMeshMovers/multiValveEngine/multiValveEngineState/multiValveEngineState.C` | fvMeshMovers |
+| `pistonBowlPoints` | `zoneGenerator` | `src/fvMeshMovers/multiValveEngine/zoneGenerators/pistonBowlPoints/pistonBowlPoints.C` | fvMeshMovers |
+| `moving` | `fvMeshStitcher` | `src/fvMeshStitchers/moving/moving_fvMeshStitcher.C` | fvMeshStitchers |
+| `meshToMesh` | `fvMeshTopoChanger` | `src/fvMeshTopoChangers/meshToMesh/meshToMesh_fvMeshTopoChanger.C` | fvMeshTopoChangers |
+| `meshToMeshAdjustTimeStep` | `functionObject` | `src/fvMeshTopoChangers/meshToMesh/meshToMeshAdjustTimeStep/meshToMeshAdjustTimeStep.C` | fvMeshTopoChangers |
+| `refiner` | `fvMeshTopoChanger` | `src/fvMeshTopoChangers/refiner/refiner_fvMeshTopoChanger.C` | fvMeshTopoChangers |
+| `CrankNicolson` | `rigidBodySolver` | `src/rigidBodyMotion/rigidBodyDynamics/rigidBodySolvers/CrankNicolson/CrankNicolson.C` | rigidBodyMotion |
+| `CrankNicolson` | `sixDoFSolver` | `src/rigidBodyMotion/sixDoFRigidBodyMotion/sixDoFSolvers/CrankNicolson/CrankNicolson.C` | rigidBodyMotion |
+| `Newmark` | `rigidBodySolver` | `src/rigidBodyMotion/rigidBodyDynamics/rigidBodySolvers/Newmark/Newmark.C` | rigidBodyMotion |
+| `Newmark` | `sixDoFSolver` | `src/rigidBodyMotion/sixDoFRigidBodyMotion/sixDoFSolvers/Newmark/Newmark.C` | rigidBodyMotion |
+| `Pa` | `joint` | `src/rigidBodyMotion/rigidBodyDynamics/joints/Pa/Pa.C` | rigidBodyMotion |
+| `Px` | `joint` | `src/rigidBodyMotion/rigidBodyDynamics/joints/Px/Px.C` | rigidBodyMotion |
+| `Pxyz` | `joint` | `src/rigidBodyMotion/rigidBodyDynamics/joints/Pxyz/Pxyz.C` | rigidBodyMotion |
+| `Py` | `joint` | `src/rigidBodyMotion/rigidBodyDynamics/joints/Py/Py.C` | rigidBodyMotion |
+| `Pz` | `joint` | `src/rigidBodyMotion/rigidBodyDynamics/joints/Pz/Pz.C` | rigidBodyMotion |
+| `Ra` | `joint` | `src/rigidBodyMotion/rigidBodyDynamics/joints/Ra/Ra.C` | rigidBodyMotion |
+| `Rs` | `joint` | `src/rigidBodyMotion/rigidBodyDynamics/joints/Rs/Rs.C` | rigidBodyMotion |
+| `Rx` | `joint` | `src/rigidBodyMotion/rigidBodyDynamics/joints/Rx/Rx.C` | rigidBodyMotion |
+| `Rxyz` | `joint` | `src/rigidBodyMotion/rigidBodyDynamics/joints/Rxyz/Rxyz.C` | rigidBodyMotion |
+| `Ry` | `joint` | `src/rigidBodyMotion/rigidBodyDynamics/joints/Ry/Ry.C` | rigidBodyMotion |
+| `Ryxz` | `joint` | `src/rigidBodyMotion/rigidBodyDynamics/joints/Ryxz/Ryxz.C` | rigidBodyMotion |
+| `Rz` | `joint` | `src/rigidBodyMotion/rigidBodyDynamics/joints/Rz/Rz.C` | rigidBodyMotion |
+| `Rzyx` | `joint` | `src/rigidBodyMotion/rigidBodyDynamics/joints/Rzyx/Rzyx.C` | rigidBodyMotion |
+| `axialAngularSpring` | `sixDoFRigidBodyMotionRestraint` | `src/rigidBodyMotion/sixDoFRigidBodyMotion/sixDoFRigidBodyMotion/restraints/axialAngularSpring/axialAngularSpring.C` | rigidBodyMotion |
+| `axis` | `sixDoFRigidBodyMotionConstraint` | `src/rigidBodyMotion/sixDoFRigidBodyMotion/sixDoFRigidBodyMotion/constraints/axis/sixDoFRigidBodyMotionAxisConstraint.C` | rigidBodyMotion |
+| `composite` | `joint` | `src/rigidBodyMotion/rigidBodyDynamics/joints/composite/compositeJoint.C` | rigidBodyMotion |
+| `cuboid` | `rigidBody` | `src/rigidBodyMotion/rigidBodyDynamics/bodies/cuboid/cuboid.C` | rigidBodyMotion |
+| `externalForce` | `restraint` | `src/rigidBodyMotion/rigidBodyDynamics/restraints/externalForce/externalForce.C` | rigidBodyMotion |
+| `floating` | `joint` | `src/rigidBodyMotion/rigidBodyDynamics/joints/floating/floatingJoint.C` | rigidBodyMotion |
+| `function` | `joint` | `src/rigidBodyMotion/rigidBodyDynamics/joints/function/function.C` | rigidBodyMotion |
+| `functionDot` | `joint` | `src/rigidBodyMotion/rigidBodyDynamics/joints/functionDot/functionDot.C` | rigidBodyMotion |
+| `jointBody` | `rigidBody` | `src/rigidBodyMotion/rigidBodyDynamics/bodies/jointBody/jointBody.C` | rigidBodyMotion |
+| `line` | `sixDoFRigidBodyMotionConstraint` | `src/rigidBodyMotion/sixDoFRigidBodyMotion/sixDoFRigidBodyMotion/constraints/line/sixDoFRigidBodyMotionLineConstraint.C` | rigidBodyMotion |
+| `linearAxialAngularSpring` | `restraint` | `src/rigidBodyMotion/rigidBodyDynamics/restraints/linearAxialAngularSpring/linearAxialAngularSpring.C` | rigidBodyMotion |
+| `linearAxialAngularSpring` | `sixDoFRigidBodyMotionRestraint` | `src/rigidBodyMotion/sixDoFRigidBodyMotion/sixDoFRigidBodyMotion/restraints/linearAxialAngularSpring/linearAxialAngularSpring.C` | rigidBodyMotion |
+| `linearDamper` | `restraint` | `src/rigidBodyMotion/rigidBodyDynamics/restraints/linearDamper/linearDamper.C` | rigidBodyMotion |
+| `linearDamper` | `sixDoFRigidBodyMotionRestraint` | `src/rigidBodyMotion/sixDoFRigidBodyMotion/sixDoFRigidBodyMotion/restraints/linearDamper/linearDamper.C` | rigidBodyMotion |
+| `linearSpring` | `restraint` | `src/rigidBodyMotion/rigidBodyDynamics/restraints/linearSpring/linearSpring.C` | rigidBodyMotion |
+| `linearSpring` | `sixDoFRigidBodyMotionRestraint` | `src/rigidBodyMotion/sixDoFRigidBodyMotion/sixDoFRigidBodyMotion/restraints/linearSpring/linearSpring.C` | rigidBodyMotion |
+| `masslessBody` | `rigidBody` | `src/rigidBodyMotion/rigidBodyDynamics/bodies/masslessBody/masslessBody.C` | rigidBodyMotion |
+| `null` | `joint` | `src/rigidBodyMotion/rigidBodyDynamics/joints/null/nullJoint.C` | rigidBodyMotion |
+| `orientation` | `sixDoFRigidBodyMotionConstraint` | `src/rigidBodyMotion/sixDoFRigidBodyMotion/sixDoFRigidBodyMotion/constraints/orientation/sixDoFRigidBodyMotionOrientationConstraint.C` | rigidBodyMotion |
+| `plane` | `sixDoFRigidBodyMotionConstraint` | `src/rigidBodyMotion/sixDoFRigidBodyMotion/sixDoFRigidBodyMotion/constraints/plane/sixDoFRigidBodyMotionPlaneConstraint.C` | rigidBodyMotion |
+| `point` | `sixDoFRigidBodyMotionConstraint` | `src/rigidBodyMotion/sixDoFRigidBodyMotion/sixDoFRigidBodyMotion/constraints/point/sixDoFRigidBodyMotionPointConstraint.C` | rigidBodyMotion |
+| `rigid` | `joint` | `src/rigidBodyMotion/rigidBodyDynamics/joints/rigid/rigid.C` | rigidBodyMotion |
+| `rigidBody` | `rigidBody` | `src/rigidBodyMotion/rigidBodyDynamics/bodies/rigidBody/rigidBody.C` | rigidBodyMotion |
+| `rigidBodyForces` | `functionObject` | `src/rigidBodyMotion/rigidBodyForces/rigidBodyForces.C` | rigidBodyMotion |
+| `rigidBodyMeshMotion` | `motionSolver` | `src/rigidBodyMotion/rigidBodyMeshMotion/rigidBodyMeshMotion/rigidBodyMeshMotion.C` | rigidBodyMotion |
+| `rigidBodyMeshMotionSolver` | `motionSolver` | `src/rigidBodyMotion/rigidBodyMeshMotion/rigidBodyMeshMotionSolver/rigidBodyMeshMotionSolver.C` | rigidBodyMotion |
+| `rigidBodyPoints` | `functionObject` | `src/rigidBodyMotion/rigidBodyState/rigidBodyPoints/rigidBodyPoints.C` | rigidBodyMotion |
+| `rigidBodyState` | `functionObject` | `src/rigidBodyMotion/rigidBodyState/rigidBodyState/rigidBodyState.C` | rigidBodyMotion |
+| `rotating` | `joint` | `src/rigidBodyMotion/rigidBodyDynamics/joints/rotating/rotating.C` | rigidBodyMotion |
+| `sixDoFRigidBodyControl` | `functionObject` | `src/rigidBodyMotion/sixDoFRigidBodyState/sixDoFRigidBodyControl/sixDoFRigidBodyControl.C` | rigidBodyMotion |
+| `sixDoFRigidBodyMotionSolver` | `motionSolver` | `src/rigidBodyMotion/sixDoFRigidBodyMotion/sixDoFRigidBodyMotionSolver/sixDoFRigidBodyMotionSolver.C` | rigidBodyMotion |
+| `sixDoFRigidBodyState` | `functionObject` | `src/rigidBodyMotion/sixDoFRigidBodyState/sixDoFRigidBodyState/sixDoFRigidBodyState.C` | rigidBodyMotion |
+| `sphere` | `rigidBody` | `src/rigidBodyMotion/rigidBodyDynamics/bodies/sphere/sphere.C` | rigidBodyMotion |
+| `sphericalAngularDamper` | `restraint` | `src/rigidBodyMotion/rigidBodyDynamics/restraints/sphericalAngularDamper/sphericalAngularDamper.C` | rigidBodyMotion |
+| `sphericalAngularDamper` | `sixDoFRigidBodyMotionRestraint` | `src/rigidBodyMotion/sixDoFRigidBodyMotion/sixDoFRigidBodyMotion/restraints/sphericalAngularDamper/sphericalAngularDamper.C` | rigidBodyMotion |
+| `sphericalAngularSpring` | `sixDoFRigidBodyMotionRestraint` | `src/rigidBodyMotion/sixDoFRigidBodyMotion/sixDoFRigidBodyMotion/restraints/sphericalAngularSpring/sphericalAngularSpring.C` | rigidBodyMotion |
+| `symplectic` | `rigidBodySolver` | `src/rigidBodyMotion/rigidBodyDynamics/rigidBodySolvers/symplectic/symplectic.C` | rigidBodyMotion |
+| `symplectic` | `sixDoFSolver` | `src/rigidBodyMotion/sixDoFRigidBodyMotion/sixDoFSolvers/symplectic/symplectic.C` | rigidBodyMotion |
+| `Airy` | `waveModel` | `src/waves/waveModels/Airy/Airy.C` | waves |
+| `GodaJONSWAP` | `waveSpectrum` | `src/waves/waveModels/irregular/waveSpectra/GodaJONSWAP/GodaJONSWAP.C` | waves |
+| `JONSWAP` | `waveSpectrum` | `src/waves/waveModels/irregular/waveSpectra/JONSWAP/JONSWAP.C` | waves |
+| `PiersonMoskowitz` | `waveSpectrum` | `src/waves/waveModels/irregular/waveSpectra/PiersonMoskowitz/PiersonMoskowitz.C` | waves |
+| `Stokes2` | `waveModel` | `src/waves/waveModels/Stokes2/Stokes2.C` | waves |
+| `Stokes5` | `waveModel` | `src/waves/waveModels/Stokes5/Stokes5.C` | waves |
+| `irregular` | `waveModel` | `src/waves/waveModels/irregular/irregular.C` | waves |
+| `isotropicDamping` | `fvModel` | `src/waves/fvModels/isotropicDamping/isotropicDamping.C` | waves |
+| `solitary` | `waveModel` | `src/waves/waveModels/solitary/solitary.C` | waves |
+| `verticalDamping` | `fvModel` | `src/waves/fvModels/verticalDamping/verticalDamping.C` | waves |
+| `waveAtmBoundaryLayerSuperposition` | `waveSuperposition` | `src/waves/waveSuperpositions/waveAtmBoundaryLayerSuperposition/waveAtmBoundaryLayerSuperposition.C` | waves |
+| `waveForcing` | `fvModel` | `src/waves/fvModels/waveForcing/waveForcing.C` | waves |
+| `waveSuperposition` | `waveSuperposition` | `src/waves/waveSuperpositions/waveSuperposition/waveSuperposition.C` | waves |
